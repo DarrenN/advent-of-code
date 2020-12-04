@@ -20,8 +20,6 @@
 (define HEIGHT (vector-length processed))
 (define RIGHT 3)
 (define DOWN 1)
-(define TREE 1)
-(define OPEN 0)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Solution
