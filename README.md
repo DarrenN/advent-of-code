@@ -1,3 +1,4 @@
-advent-of-code
+Advent of Code
 ==============
-README text here.
+
+Collection of solutions for https://adventofcode.com/ challenges. Mostly done in [Racket](https://racket-lang.org/). Guaranteed to be incomplete.
