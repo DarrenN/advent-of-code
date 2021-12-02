@@ -58,6 +58,10 @@ measurement.
               (values d ct)))))
   increased-count)
 
-(printf "Number of increases: ~a~n" (count-depths full-input))
+(define-values (result cpu real gc)
+  (time-apply count-depths (list full-input)))
+
+(printf "Number of increases: ~a~n" (car result))
+(printf "[Time] cpu: ~ams | real: ~ams | gc: ~ams~n" cpu real gc)
 
 

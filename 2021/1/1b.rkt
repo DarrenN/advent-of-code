@@ -77,6 +77,10 @@ In this example, there are 5 sums that are larger than the previous sum.
                     [else (values sum ct)]))))))
   increased-count)
 
-(printf "Number of increases: ~a~n" (count-depths full-input))
+(define-values (result cpu real gc)
+  (time-apply count-depths (list full-input)))
+
+(printf "Number of increases: ~a~n" (car result))
+(printf "[Time] cpu: ~ams | real: ~ams | gc: ~ams~n" cpu real gc)
 
 
