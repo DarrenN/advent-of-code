@@ -1,8 +1,7 @@
 #lang racket/base
 
-(require
- (only-in racket/string string-split)
- "../lib/read-input.rkt")
+(require  (only-in racket/file file->list)
+          "../lib/timed.rkt")
 
 #|
 
@@ -42,10 +41,7 @@ In this example, there are 5 sums that are larger than the previous sum.
 
 |#
 
-(define (process-input input-file)
-  (list->vector (map string->number (string-split (read-input input-file)))))
-
-(define full-input (process-input "./input-1a.txt"))
+(define full-input (list->vector (file->list "./input-1a.txt")))
 
 ;; test input
 (define depths (vector 199
@@ -77,10 +73,10 @@ In this example, there are 5 sums that are larger than the previous sum.
                     [else (values sum ct)]))))))
   increased-count)
 
-(define-values (result cpu real gc)
-  (time-apply count-depths (list full-input)))
+(define-values (result ms)
+  (timed-apply count-depths (list full-input)))
 
-(printf "Number of increases: ~a~n" (car result))
-(printf "[Time] cpu: ~ams | real: ~ams | gc: ~ams~n" cpu real gc)
+(printf "Number of increases: ~a~n" result)
+(printf "Duration in ms: ~a~n" ms)
 
 

@@ -1,8 +1,8 @@
 #lang racket/base
 
 (require
- (only-in racket/string string-split)
- "../lib/read-input.rkt")
+  (only-in racket/file file->list)
+  "../lib/timed.rkt")
 
 #|
 
@@ -29,28 +29,11 @@ measurement.
 
 |#
 
-(define (process-input input-file)
-  (map string->number (string-split (read-input input-file))))
-
-(define full-input (process-input "./input-1a.txt"))
-
-;; test input
-(define depths '(199
-                 200
-                 208
-                 210
-                 200
-                 207
-                 240
-                 269
-                 260
-                 263))
-
 (define (count-depths depths)
   (define-values (_ increased-count)
     (for/fold ([seen 0]
                [ct 0])
-              ([d depths])
+              ([d (in-list depths)])
       (if (zero? seen)
           (values d ct)
           (if (> d seen)
@@ -58,10 +41,25 @@ measurement.
               (values d ct)))))
   increased-count)
 
-(define-values (result cpu real gc)
-  (time-apply count-depths (list full-input)))
+(define-values (result ms)
+  (timed-apply count-depths (list (file->list "./input-1a.txt"))))
 
-(printf "Number of increases: ~a~n" (car result))
-(printf "[Time] cpu: ~ams | real: ~ams | gc: ~ams~n" cpu real gc)
+(printf "Number of increases: ~a~n" result)
+(printf "Duration in ms: ~a~n" ms)
 
-
+(module+ test
+  (require rackunit
+           (only-in racket/file file->list))
+  (define depths '(199
+                   200
+                   208
+                   210
+                   200
+                   207
+                   240
+                   269
+                   260
+                   263))
+  (define-values (result dur)
+    (timed-apply count-depths (list depths)))
+  (check-equal? result 7))
