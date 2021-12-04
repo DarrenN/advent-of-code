@@ -23,8 +23,7 @@
 (define (count-significant-bits input bs)
   (define (update-bit! bs pos fn0 fn1)
     (let-values ([(c0 c1) (get-bit bs pos)])
-      (set-bit! bs pos (fn0 c0) (fn1 c1))
-      (get-bit bs pos)))
+      (set-bit! bs pos (fn0 c0) (fn1 c1))))
 
   (for ([b (in-list input)])
     (let ([l (string->list b)])
