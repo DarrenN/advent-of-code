@@ -17,6 +17,9 @@
 (define (set-bit! bs pos c0 c1)
   (vector-set*! bs (* 2 pos) c0 (add1 (* 2 pos)) c1))
 
+;; Counts the 0s and 1s in each number storing the running counts in a
+;; vector: [a0 a1 b0 b1 c0 c1 ...]. This is pretty fast as we're bumping
+;; the vector in place.
 (define (count-significant-bits input bs)
   (define (update-bit! bs pos fn0 fn1)
     (let-values ([(c0 c1) (get-bit bs pos)])
@@ -24,25 +27,28 @@
       (get-bit bs pos)))
 
   (for ([b (in-list input)])
-    (for ([c (in-list (string->list b))]
-          [p (in-range 0 (length (string->list b)))])
-      (if (eq? #\0 c)
-          (update-bit! bs p add1 identity)
-          (update-bit! bs p identity add1))))
+    (let ([l (string->list b)])
+      (for ([c (in-list l)]
+            [p (in-range 0 (length l))])
+        (if (eq? #\0 c)
+            (update-bit! bs p add1 identity)
+            (update-bit! bs p identity add1)))))
 
   bs)
 
+;; Builds up a list of chars (ex: '(#\0 #\0 #\1)) for both the most and least
+;; significant bits as determined from the accumulated bits, and then converts
+;; the char lists to a string and then a decimal number.
 (define (combined-significant-bits bs)
   (let-values ([(ms ls)
-                (for/fold ([ms ""]
-                           [ls ""])
-                          ([p (in-range 0 (/ (vector-length bs) 2))])
+                (for/lists (m l)
+                           ([p (in-range 0 (/ (vector-length bs) 2))])
                   (let-values ([(c0 c1) (get-bit bs p)])
                     (if (> c0 c1)
-                        (values (string-append ms "0") (string-append ls "1"))
-                        (values (string-append ms "1") (string-append ls "0")))))])
-    (values (string->number ms 2)
-            (string->number ls 2))))
+                        (values #\0 #\1)
+                        (values #\1 #\0))))])
+    (values (string->number (list->string ms) 2)
+            (string->number (list->string ls) 2))))
 
 (define (significant-bits input)
   (let ([bits
