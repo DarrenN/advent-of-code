@@ -1,21 +1,5 @@
 #lang racket/base
 
-#|
-Get significant bits count from input
-loop over input again filtering items into most-common-bit and least-common-bit lists based on first value
-run two independent loops over the two remaining lists narrowing them down to their last values
-
-
-Could:
-
-run the first loop, filtering inputs into a list of c0 and c1
-list with the greater length is the mcb and lesser is lcb
-re-run the same loop as the first, on both mcb and lcb
-repeat until a single value in each list
-
-!! will need to pass in which bit to inspect in each loop
-|#
-
 (require
  (only-in racket/file
           file->lines)
@@ -23,8 +7,11 @@ repeat until a single value in each list
           print-timed))
 
 (define input (file->lines "./input.txt"))
+
+;; Convert binary strings into vectors of #\0 and #\1 chars
 (define bitput (map (λ (l) (list->vector (string->list l))) input))
 
+;; Filter input bits into lists of those starting with 0 and 1 respectively
 (define (filter-bits bs pos)
   (let-values ([(0s 1s)
                 (for/fold ([c0 '()]
@@ -36,6 +23,7 @@ repeat until a single value in each list
                         (values c0 (cons b c1)))))])
     (values (reverse 0s) (reverse 1s))))
 
+;; Recursively filter out oxygen rating bits (most sig bits)
 (define (search-oxygen input pos)
   (if (eq? 1 (length input))
       input
@@ -46,6 +34,7 @@ repeat until a single value in each list
                 (search-oxygen 0s (add1 pos))
                 (search-oxygen 1s (add1 pos)))))))
 
+;; Recursively filter out co2 rating bits (least sig bits)
 (define (search-co input pos)
   (if (eq? 1 (length input))
       input
@@ -56,6 +45,7 @@ repeat until a single value in each list
                 (search-co 0s (add1 pos))
                 (search-co 1s (add1 pos)))))))
 
+;; Convert vector of chars to a decimal number
 (define (bits->number bs)
   (string->number (list->string (vector->list (car bs))) 2))
 
