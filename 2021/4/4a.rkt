@@ -33,7 +33,9 @@ check for wins:
          (only-in racket/string
                   string-split)
          (only-in "../lib/utils.rkt"
-                  group))
+                  group)
+         (only-in "../lib/timed.rkt"
+                  print-timed))
 
 (struct point (x y v [called? #:auto #:mutable])
   #:auto-value #f
@@ -102,7 +104,7 @@ check for wins:
     (for/fold ([bs '()])
               ([b (in-list (group (cdr input-list) '() 6))])
       (cons (map string-split (cdr b)) bs)))
-  (values calls boards))
+  (values (map string->number (string-split calls ",")) boards))
 
 (define (create-board rows)
   (define b (board))
@@ -125,7 +127,10 @@ check for wins:
       (call-number board call))))
 
 
-(module+ main)
+(module+ main
+  (define-values (calls rows)
+    (parse-input (file->lines "./input.txt")))
+  (print-timed play-bingo (list rows calls)))
 
 (module+ test
   (require racket/string
