@@ -37,14 +37,22 @@ check for wins:
          (only-in "../lib/timed.rkt"
                   print-timed))
 
+;; A "number" on a board. Stores its x / y position on the grid
+;; v is its value
+;; called? has it been called on this board or not?
 (struct point (x y v [called? #:auto #:mutable])
   #:auto-value #f
   #:transparent)
 
+;; Boards are stores as two hashes (maps)
+;; seen = hash<value><bool> is a collection of calls that were on this board
+;; points = hash<value><point> is a collection of all the points on a board and
+;; their status
 (struct board ([seen #:auto #:mutable] [points #:auto #:mutable])
   #:auto-value (hash)
   #:transparent)
 
+;; Check for 5 points across the grid
 ;; hash keyed on point-y
 (define (check-across ps)
   (define sorted
@@ -54,6 +62,7 @@ check for wins:
   (for/or ([(_ v) (in-hash sorted)])
     (>= (length v) 5)))
 
+;; Check for 5 points down the grid
 ;; hash keyed on point-x
 (define (check-down ps)
   (define sorted
@@ -66,6 +75,7 @@ check for wins:
 (define (check-down-or-across ps)
   (or (check-down ps) (check-across ps)))
 
+;; Is the board in a bingo? state
 (define (check-board b)
   (define points (board-points b))
   (define ps (for/list ([k (in-list (hash-keys (board-seen b)))])
@@ -75,6 +85,7 @@ check for wins:
 (define (add-point b p)
   (set-board-points! b (hash-set (board-points b) (point-v p) p)))
 
+;; Sum all uncalled points on a board and multiple by the last called number
 (define (sum-board b n)
   (define unmarked
     (for/sum ([p (in-list (hash-values (board-points b)))])
@@ -98,6 +109,7 @@ check for wins:
             #f))
       #f))
 
+;; Convert input into calls and rows
 (define (parse-input input-list)
   (define calls (car input-list))
   (define boards
@@ -106,6 +118,7 @@ check for wins:
       (cons (map string-split (cdr b)) bs)))
   (values (map string->number (string-split calls ",")) boards))
 
+;; Load a board with points
 (define (create-board rows)
   (define b (board))
   (for ([row (in-list rows)]
@@ -136,7 +149,6 @@ check for wins:
   (require racket/string
            (only-in racket/file
                     file->lines))
-
 
   (define across (for/list ([i (in-range 5)])
                    (point i 2 (* 2 i))))
