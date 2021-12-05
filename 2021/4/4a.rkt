@@ -1,31 +1,5 @@
 #lang racket/base
 
-#|
-Bingo
-
-data structures:
-
-(define point (struct (x y val [called? #f]) #:transparent))
-
-(define board
-(hash 'seen '(.. list of numbers? called)
-22 (point 0 0 22 #f)
-12 (point 0 1 12 #f))
-
-(define boards (vector ...board))
-
-when a number is "called":
-
-vector-map over each board in boards
-if board has key (called number)
-update point for key with called? #t and add to 'seen list
-if (length seen) >= 5 then check for sequences that "win"
-
-check for wins:
-
-
-|#
-
 (require (only-in racket/file
                   file->lines)
          (only-in racket/function
@@ -36,6 +10,8 @@ check for wins:
                   group)
          (only-in "../lib/timed.rkt"
                   print-timed))
+
+;; Advent of Code 2021 Day 4 Part 1
 
 ;; A "number" on a board. Stores its x / y position on the grid
 ;; v is its value
