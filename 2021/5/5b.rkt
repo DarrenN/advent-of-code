@@ -97,7 +97,7 @@ GRD
 
   (interpolate2 (vector 1 1) (vector 3 3))
   (interpolate2 (vector 9 7) (vector 7 9))
-|#
+  |#
   (define ranges (map process-range (string-split input "\n")))
   (find-vents ranges)
   )
