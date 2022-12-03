@@ -1,6 +1,7 @@
 #lang racket/base
 
 (require
+ racket/list
  racket/vector
  (only-in racket/string string-split)
  "../../lib/timed.rkt")
@@ -20,21 +21,30 @@
 
 10000")
 
+(define (tops ts sum)
+  (if (> sum (last ts))
+      (take (sort (append ts `(,sum)) >) 3)
+      ts))
+
 (define (make-calorie-count lst)
-  (define v (make-vector 500 0)) ;; vector of combined calorie counts
+  (define ts '(0 0 0))
+  ;(define v (make-vector 500 0)) ;; vector of combined calorie counts
   (define p 0) ;; position
   (define c 0) ;; combined calories
   (for ([i (in-list lst)])
     (cond [(equal? i "")
-           (begin0 (vector-set! v p c)
+           (begin0 ;(vector-set! v p c)
+             (set! ts (tops ts c))
              (set! c 0)
              (set! p (add1 p)))]
           [else (begin0
                     (let ([n (string->number i)])
-                      (vector-set! v p (+ c n))
+                      ;(vector-set! v p (+ c n))
                       (set! c (+ c n))))]))
-  (vector-sort! v >)
-  v)
+  (values '() ts))
+
+(define (get-tops2 n ts)
+  (for/sum ([i (in-list (take ts n))]) i))
 
 (define (get-tops n cs)
   (for/sum ([i (in-vector (vector-take cs n))]) i))
@@ -61,7 +71,8 @@
 
   
   (define-values (result dur)
-    (timed-apply (λ (ls) (get-tops 3 (make-calorie-count ls)))
+    (timed-apply (λ (ls) (define-values (cs ts) (make-calorie-count ls))
+                   (get-tops2 3 ts))
                  (list
                   (file->lines "./input.txt")
                   ;input
