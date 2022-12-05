@@ -6,21 +6,6 @@
  (only-in racket/string string-split)
  "../../lib/timed.rkt")
 
-(define input "1000
-2000
-3000
-
-4000
-
-5000
-6000
-
-7000
-8000
-9000
-
-10000")
-
 (define (tops ts sum)
   (if (> sum (last ts))
       (take (sort (append ts `(,sum)) >) 3)
@@ -42,6 +27,20 @@
                       ;(vector-set! v p (+ c n))
                       (set! c (+ c n))))]))
   (values '() ts))
+
+(define (make-calorie-count2 lst)
+  (define (top-sort cals tops)
+    (if (> cals (last tops))
+        (take (sort (cons cals tops) >) 3)
+        tops))
+
+  (for/fold ([tops '(0 0 0)]
+             [cals 0]
+             #:result (top-sort cals tops))
+            ([l (in-list lst)])
+    (if (equal? l "")
+        (values (top-sort cals tops) 0)
+        (values tops (+ cals (string->number l))))))
 
 (define (get-tops2 n ts)
   (for/sum ([i (in-list (take ts n))]) i))
@@ -69,12 +68,12 @@
 
 10000" #px"\\s"))
 
-  
-  (define-values (result dur)
-    (timed-apply (λ (ls) (define-values (cs ts) (make-calorie-count ls))
-                   (get-tops2 3 ts))
+(define-values (result dur)
+    (timed-apply (λ (ls) (get-tops2 3 (make-calorie-count2 ls)))
                  (list
                   (file->lines "./input.txt")
                   ;input
                   )))
-  (println (format "~a : ~a" result dur)))
+  (println (format "~a : ~a" result dur))
+
+  )
