@@ -25,6 +25,15 @@
    'B 0 ; paper
    'Y 0))
 
+(define table-wins-reverse
+  (hash
+   2 'A ; rock
+   2 'X
+   1 'C ; scissors
+   1 'Z
+   0 'B ; paper
+   0 'Y))
+
 (define (play input)
   (define (loop ls s)
     (if (null? ls)
@@ -41,6 +50,23 @@
                 [else (loop rs (+ s points 3))])))) ; draw
   (loop input 0))
 
+(define (play2 input)
+  (define (loop ls s)
+    (if (null? ls)
+        s
+        (let* ([p (if (> (length ls) 2) (take ls 2) ls)]
+               [rs (if (>= (length ls) 2) (drop ls 2) '())]
+               [l (hash-ref table-wins (car p))]
+               [r (cadr p)])
+          (cond [(eq? r 'X) (cond [(= 2 l) (loop rs (+ s 3))]
+                                  [(= 1 l) (loop rs (+ s 2))]
+                                  [(= 0 l) (loop rs (+ s 1))])] ; lose
+                [(eq? r 'Y) (loop rs (+ s (hash-ref table (car p)) 3))] ; draw
+                [else (cond [(= 2 l) (loop rs (+ s 2 6))]
+                            [(= 1 l) (loop rs (+ s 1 6))]
+                            [(= 0 l) (loop rs (+ s 3 6))])])))) ; win
+  (loop input 0))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Tests
@@ -48,10 +74,10 @@
 (module+ test
   (require (only-in racket/file file->list))
   (define input '(A Y B X C Z))
-  (define input2 '(Y A))
+  (define input2 '(C Z))
 
   (define-values (result dur)
-    (timed-apply  play
+    (timed-apply  play2
                  (list
                   (file->list "./input.txt")
                   ;input
