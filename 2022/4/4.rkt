@@ -18,6 +18,17 @@
             [(and (<= (car b) (car a)) (>= (cadr b) (cadr a))) (add1 overlaps)]
             [else overlaps]))))
 
+;; Only check if the numbers overlap, not complete containment
+(define (find-overlaps2 input)
+  (for/fold ([overlaps 0])
+            ([i (in-list input)])
+    (let* ([ps (map string->number (string-split i #px"[,-]"))] ; list of ints
+           [a (take ps 2)] ; left pair
+           [b (drop ps 2)]) ; right pair
+      (cond [(and (>= (car b) (car a)) (<= (car b) (cadr a))) (add1 overlaps)]
+            [(and (<= (car b) (car a)) (>= (cadr b) (car a))) (add1 overlaps)]
+            [else overlaps]))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Tests
 
@@ -36,8 +47,10 @@
   
   (define file-input (file->lines "./input.txt"))
   (define-values (result dur)
-    (timed-apply  find-overlaps
-                  (list file-input)))
+    (timed-apply  find-overlaps2
+                  (list file-input)
+                  ;(list input)
+                  ))
 
   (println (format "~a : ~a" result dur))
   )
