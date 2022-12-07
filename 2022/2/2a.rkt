@@ -76,10 +76,10 @@
   (define input '(A Y B X C Z))
   (define input2 '(C Z))
 
-  (define-values (result dur)
+    (define-values (result dur)
     (timed-apply  play2
                  (list
                   (file->list "./input.txt")
                   ;input
                   )))
-  (println (format "~a : ~a" result dur)))
+      (println (format "~a : ~a" result dur)))
