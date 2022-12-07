@@ -18,6 +18,20 @@
       (cond [(< n 91) (+ sum (- n 38))]
             [else (+ sum (- n 96))]))))
 
+(define (get-badges input)
+  ;; List eater that consumes 3 items on each iteration
+  (define (loop sum lst)
+    (if (null? lst)
+        sum
+        (let* ([trio (map string->list (take lst 3))] ; consume 3 items
+               [rst (drop lst 3)] ; remainder of list
+               [badge (apply set-intersect trio)] ; find badge
+               [n (char->integer (car badge))]) ; convert badge to int
+          ;; offset the int to get 1 - 26 or 27 - 52, sum and recur w rst
+          (cond [(< n 91) (loop (+ sum (- n 38)) rst)]
+                [else (loop (+ sum (- n 96)) rst)]))))
+  (loop 0 input))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Tests
 
@@ -32,11 +46,8 @@ ttgJtRGJQctTZtZT
 CrZsJsPPZsGzwwsLwLmpwMDw")
 
   (define file-input (file->lines "./input.txt"))
-
   (define-values (result dur)
-    (timed-apply  sack-contents-a
+    (timed-apply  get-badges
                   (list file-input)))
 
-  (println (format "~a : ~a" result dur))
-
-  )
+  (println (format "~a : ~a" result dur)))
