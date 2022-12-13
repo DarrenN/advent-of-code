@@ -29,7 +29,7 @@
            (loop (drop l (if (> (length l) 3) 4 3)) (add1 pos))]))
   (loop (string->list s) 0))
 
-(define (move-crate s)
+(define (move-crate s #:B? [B #f])
   (let* ([rx (regexp-match #px"move ([\\d]+) from ([\\d]+) to ([\\d]+)" s)]
          [ns (map string->number (cdr rx))]
          [q (car ns)] ; how many crates to move
@@ -40,10 +40,13 @@
     (vector-set! (*crates*) s
                  (drop (vector-ref (*crates*) s) q))
 
-    ;; move crates from cs one at a time to e
-    (for ([c (in-list cs)])
-      (vector-set! (*crates*) e
-                   (append `(,c) (vector-ref (*crates*) e))))))
+    ;; We can do A or B depending on the flag
+    (if B
+        (vector-set! (*crates*) e
+                     (append cs (vector-ref (*crates*) e)))
+        (for ([c (in-list cs)])
+          (vector-set! (*crates*) e
+                       (append `(,c) (vector-ref (*crates*) e)))))))
 
 (define (get-tops)
   (list->string
