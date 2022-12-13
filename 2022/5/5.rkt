@@ -3,17 +3,17 @@
 (require racket/list
          racket/match)
 
+;; Store crates in silos (lists) in a vector (n-index)
 (define *crates* (make-parameter (make-vector 9 '())))
 
 (define (crate? s)
   (regexp-match #rx"\\[" s))
 
-(define (crate-id? s)
-  (regexp-match-exact? #px"[\\d\\s]+" s))
-
 (define (move? s)
   (regexp-match #rx"move" s))
 
+;; Slot crates into the correct silos, line by line
+;; Pattern match to figure out if this is a crate or "empty space"
 (define (parse-crate s)
   (define (m x)
     (match x
@@ -55,11 +55,9 @@
 
 (define (parse in)
   (define line (read-line in))
-  (cond [(eof-object? line) (get-tops)]
-        [(equal? line "") (parse in)]
-        [(crate? line) (parse-crate line) (parse in)]
-        [(crate-id? line) (println "CRATE IDS") (parse in)]
-        [(move? line) (move-crate line) (parse in)]
+  (cond [(eof-object? line) (get-tops)] ; print tops of each silo
+        [(crate? line) (parse-crate line) (parse in)] ; parse crate into silos
+        [(move? line) (move-crate line) (parse in)] ; move crates!
         [else (parse in)]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
