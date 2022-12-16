@@ -7,6 +7,7 @@
         [(check-duplicates seen) #f]
         [else #t]))
 
+;; Keep a sliding window of size
 (define (push seen c [size 4])
   (if (< (length seen) size)
       (append seen `(,c))
