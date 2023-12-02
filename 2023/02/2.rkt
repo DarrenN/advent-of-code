@@ -8,6 +8,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Public
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; 2023 2a
+
 ;; Scans a single line of input (a Game) and converts into a hash with max
 ;; values for each color cube. Example output:
 ;; #hash(("blue" . 6) ("green" . 2) ("id" . 1) ("red" . 4))
@@ -53,6 +56,19 @@
           sum))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; 2023 2b
+
+(define (find-powers ls)
+  (for/fold ([sum 0])
+            ([l (in-list ls)])
+    (let* ([game (scan-input l)]
+           [id (hash-ref game "id")]
+           [red (hash-ref game "red")]
+           [green (hash-ref game "green")]
+           [blue (hash-ref game "blue")])
+      (+ sum (* red green blue)))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Test
 
 (module+ test
@@ -70,8 +86,8 @@ Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red
 Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green")
 
   ;; 12 red cubes, 13 green cubes, and 14 blue cubes
-  ;;(find-winners (prep-test-input test-input) 12 13 14)
+  ;;(find-powers (prep-test-input test-input))
 
-  (find-winners (file->lines "./input.txt") 12 13 14)
+  (find-powers (file->lines "./input.txt"))
 
   )
