@@ -4,6 +4,23 @@
          racket/list
          racket/string)
 
+#|
+
+Notes:
+
+Could re-do 3b to create the lookup table of numbers AND also capture the
+(x y) location of all gears. This should shorten the lookup time on finding
+neighbors as we already know where the gears are.
+
+gears: `((x y) (x y) ...)
+lookup: #hash((x y) . 123)
+
+(for ([gear (in-list gears)])
+  (find-neighbors t gear)
+  ...)
+
+|#
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 2023 3a
 
@@ -91,8 +108,6 @@ part - bool? is part or not
           [else ;; period or symbol, if we have a buffer & part then sum
            (values '() #f sum)])))
     (+ s sum)))
-
-(struct num (x pos value) #:mutable)
 
 (define (extract-value bs)
   (for/fold ([v '()]
