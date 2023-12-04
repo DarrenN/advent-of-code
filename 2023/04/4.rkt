@@ -23,6 +23,23 @@ Creating hasheq (apply hasheq '(1 a 2 b 3 c))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 2023 4a
 
+(define (scan-input l)
+  (for/fold ([buf '()]
+             [wins '()]
+             [nums (hasheq)]
+             [divider #f])
+            ([c (in-list (string->list l))])
+    (cond
+      ;; Treat the : as a signal to start capturing numbers, ditch all preceding
+      [(equal? c #\:) (values buf wins nums divider)]
+      ;; Divider between wins & nums, switch on the divider sigil
+      [(equal? c #\|) (values buf wins nums #t)]
+      ;; Treat spaces as dividers between numbers signalling a capture
+      [(equal? c #\space) (values buf wins nums divider)]
+      ;; Capture numbers into either wins or nums depending on divider
+      [(char-numeric? c) (values buf wins nums divider)]
+      ;; Ignore everything else
+      [else (values buf wins nums divider)])))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 2023 4b
