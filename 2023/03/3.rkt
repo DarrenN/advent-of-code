@@ -16,8 +16,8 @@ gears: `((x y) (x y) ...)
 lookup: #hash((x y) . 123)
 
 (for ([gear (in-list gears)])
-  (find-neighbors t gear)
-  ...)
+(find-neighbors t gear)
+...)
 
 |#
 
@@ -165,7 +165,7 @@ part - bool? is part or not
   (define (check-neighbors x y)
     (filter
      (λ (x) x)
-     `(,(neighbor? x (sub1 y) ) ;; N
+     `(,(neighbor? x (sub1 y)) ;; N
        ,(neighbor? (add1 x) (sub1 y)) ;; NE
        ,(neighbor? (add1 x) y) ;; E
        ,(neighbor? (add1 x) (add1 y)) ;; SE
