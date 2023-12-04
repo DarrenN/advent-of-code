@@ -10,8 +10,13 @@ Advent of Code Day 4 https://adventofcode.com/2023/day/4
 
 Notes:
 
-Store numbers you have in a hash for O(1) lookup, the winning numbers
+Store numbers in a hasheq for O(1) lookup, the winning numbers
 can stay in a list as you're going to iterate over them anyway.
+
+Or, use hash-intersect to combine two hashes:
+(hash-intersect ha hb #:combine (λ (v1 v2) #t))
+
+Creating hasheq (apply hasheq '(1 a 2 b 3 c))
 
 |#
 
