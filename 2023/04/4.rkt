@@ -91,16 +91,7 @@ Creating hasheq (apply hasheq '(1 a 2 b 3 c))
               ([l (in-list ls)])
       (define-values (id children) (scan-input-b l len))
       (hash-set cs id children)))
-  
-  (define (loop wins children)
-    (cond
-      [(null? children) wins]
-      ;[(> (length children) 50) children]
-      [else
-       (loop (cons (car children) wins)
-             (append (cdr children) (hash-ref cards (car children))))]))
-  (loop '() '(1))
-  )
+  cards)
 
 (define (calc-children vs len)
   (define id (car vs))
@@ -178,6 +169,23 @@ Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11")
   ;;(find-winners (file->lines "./input.txt"))
 
   ;; 4b
-  (find-winning-cards (prep-test-input test-input))
-  (find-winning-cards (file->lines "./input.txt"))
+  ;(define cards (find-winning-cards (prep-test-input test-input)))
+  (define cards (find-winning-cards (file->lines "./input.txt")))
+
+  
+  (define ct 0)
+
+  (define (count-cards ids)
+    (for ([i ids])
+      (define cs (hash-ref cards i))
+      (cond
+        [(not (null? cs))
+         (set! ct (+ ct 1))
+         (count-cards cs)]
+        [else (set! ct (+ ct 1))])))
+
+  (count-cards (in-inclusive-range 1 (length (hash-keys cards))))
+
+  ct
+  ; 
   )
