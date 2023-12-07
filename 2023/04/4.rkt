@@ -84,6 +84,7 @@ Creating hasheq (apply hasheq '(1 a 2 b 3 c))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 2023 4b
 
+;; for each game find the winning numbers and load into a hash keyed on game id
 (define (find-winning-cards ls)
   (define len (length ls)) ;; this is our stopping point
   (define cards
@@ -93,14 +94,28 @@ Creating hasheq (apply hasheq '(1 a 2 b 3 c))
       (hash-set cs id children)))
   cards)
 
+;; Scan the hash of winning cards and recursively round up their children
+;; incrementing out counter by one
+(define (count-winning-cards cards)
+    (define ct 0)
+    (define (count-cards ids)
+      (for ([i ids])
+        (define cs (hash-ref cards i))
+        (cond
+          [(not (null? cs))
+           (set! ct (+ ct 1))
+           (count-cards cs)]
+          [else (set! ct (+ ct 1))])))
+    (count-cards (in-inclusive-range 1 (length (hash-keys cards))))
+    ct)
+
+;; Count the winning numbers and generate the card copies as ids
 (define (calc-children vs len)
   (define id (car vs))
   (define ws (cadr vs))
   (define ns (caddr vs))
   (define ks (hash-keys (hash-intersect ws ns #:combine (λ (v1 v2) #t))))
   (cond
-    ;;[(eq? id len) ;; never run past the end of the table
-    ;; (values id '())]
     [(zero? (length ks))
      (values id '())]
     [else
@@ -170,22 +185,5 @@ Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11")
 
   ;; 4b
   ;(define cards (find-winning-cards (prep-test-input test-input)))
-  (define cards (find-winning-cards (file->lines "./input.txt")))
-
-  
-  (define ct 0)
-
-  (define (count-cards ids)
-    (for ([i ids])
-      (define cs (hash-ref cards i))
-      (cond
-        [(not (null? cs))
-         (set! ct (+ ct 1))
-         (count-cards cs)]
-        [else (set! ct (+ ct 1))])))
-
-  (count-cards (in-inclusive-range 1 (length (hash-keys cards))))
-
-  ct
-  ; 
+  (count-winning-cards (find-winning-cards (file->lines "./input.txt")))
   )
