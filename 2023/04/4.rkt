@@ -97,17 +97,25 @@ Creating hasheq (apply hasheq '(1 a 2 b 3 c))
 ;; Scan the hash of winning cards and recursively round up their children
 ;; incrementing out counter by one
 (define (count-winning-cards cards)
-    (define ct 0)
-    (define (count-cards ids)
-      (for ([i ids])
-        (define cs (hash-ref cards i))
-        (cond
-          [(not (null? cs))
-           (set! ct (+ ct 1))
-           (count-cards cs)]
-          [else (set! ct (+ ct 1))])))
-    (count-cards (in-inclusive-range 1 (length (hash-keys cards))))
-    ct)
+  (define ct 0) ;; tally
+
+  ;; Recursively walk all the winning game card ids within each winning card
+  ;; for each id increment tally by 1
+  (define (count-cards ids)
+    (for ([i ids])
+      (define cs (hash-ref cards i))
+      (cond
+        [(not (null? cs))
+         (set! ct (+ ct 1))
+         (count-cards cs)]
+        [else (set! ct (+ ct 1))])))
+
+  ;; Walk each winning card in the card hash pulling the ids to copy and
+  ;; looping over them in count-cards
+  (count-cards (in-inclusive-range 1 (length (hash-keys cards))))
+
+  ;; return the tally
+  ct)
 
 ;; Count the winning numbers and generate the card copies as ids
 (define (calc-children vs len)
