@@ -1,0 +1,9 @@
+* Advent of Code 2024
+
+** Setup
+
+From this folder, install Racket packages:
+
+#+begin_src shell
+make setup
+#+end_src
